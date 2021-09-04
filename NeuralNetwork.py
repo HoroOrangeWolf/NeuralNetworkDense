@@ -2,6 +2,28 @@ import torch
 from torch import nn
 
 
+class DenseBlock(nn.Module):
+    def __init__(self, in_channels):
+        super(DenseBlock, self).__init__()
+
+        self.relu = nn.ReLU(inplace=True)
+
+        self.normalization = nn.BatchNorm2d(num_features=in_channels)
+
+        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=32)
+
+        self.conv2 = nn.Conv2d(in_channels=32, out_channels=32)
+
+        self.conv3 = nn.Conv2d(in_channels=64, out_channels=32)
+
+        self.conv4 = nn.Conv2d(in_channels=128, out_channels=32)
+
+        self.conv5 = nn.Conv2d(in_channels=256, out_channels=32)
+
+    def forward(self, x):
+        return self.sequence(x)
+
+
 class MNISTNeuralNetwork(nn.Module):
     def __init__(self, in_channels):
         super(MNISTNeuralNetwork, self).__init__()
@@ -41,7 +63,7 @@ def trainNeuralNetwork(data_loader, model, optimizer, loss_fn, device):
         avg_loss += loss.item()
 
         if count % 100 == 0 and count != 0:
-            print(f'avg. loss: [{avg_loss/(100*len(x)):>5f}  [{count*len(x)}/{size}]')
+            print(f'avg. loss: [{avg_loss / (100 * len(x)):>5f}  [{count * len(x)}/{size}]')
             avg_loss = 0
 
 
@@ -60,8 +82,4 @@ def testNeuralNetwork(data_loader, model, loss_fn, device):
             avg_loss += loss.item()
             correct += (pred.argmax(1) == y).type(torch.float).sum().item()
 
-        print(f'avg.loss: {(avg_loss / size):>4f} correct: {(correct / size)*100:>2f}%')
-
-
-
-
+        print(f'avg.loss: {(avg_loss / size):>4f} correct: {(correct / size) * 100:>2f}%')
